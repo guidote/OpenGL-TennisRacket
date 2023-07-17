@@ -2,6 +2,8 @@
 ### Comp371 Assignment 1 - Gabrielle Guidote 40175182
 
 The model is creating using hierarchical modelling, the arm and body are seperate cubes that are transformed to take shape of the model.
+  cd build and make to build the code
+  ./assignment1 to run the code
 
 Controls  | Description
 ------------- | -------------
