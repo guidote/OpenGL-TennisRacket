@@ -1,6 +1,6 @@
 # OpenGL-TennisRacket
-# Comp371 Assignment 1
-Gabrielle Guidote 40175182
+Comp371 Assignment 1 - Gabrielle Guidote 40175182
+
 Controls  | Description
 ------------- | -------------
 SPACEBAR  | Pressing the spacebar should re-position the model at a random location on the grid.
