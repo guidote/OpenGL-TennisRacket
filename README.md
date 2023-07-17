@@ -1,5 +1,7 @@
 # OpenGL-TennisRacket
-Comp371 Assignment 1 - Gabrielle Guidote 40175182
+### Comp371 Assignment 1 - Gabrielle Guidote 40175182
+
+The model is creating using hierarchical modelling, the arm and body are seperate cubes that are transformed to take shape of the model.
 
 Controls  | Description
 ------------- | -------------
