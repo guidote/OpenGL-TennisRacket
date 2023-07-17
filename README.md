@@ -2,10 +2,12 @@
 ### Comp371 Assignment 1 - Gabrielle Guidote 40175182
 
 The model is creating using hierarchical modelling, the arm and body are seperate cubes that are transformed to take shape of the model. <br />
-*Building*
+<br />
+*Building : * <br />
   cd build and make to build the code <br />
   ./assignment1 to run the code <br />
-*Controls*
+  <br />
+*Controls : *
 Controls  | Description
 ------------- | -------------
 SPACEBAR  | Pressing the spacebar should re-position the model at a random location on the grid.
