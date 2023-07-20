@@ -4,9 +4,9 @@
 The model is creating using hierarchical modelling, the arm and body are seperate cubes that are transformed to take shape of the model. <br />
 <br />
 _Building : _ <br />
-  in code - mkdir build
-  cmake -S . -B <build_folder>
-  cmake --build <build_folder> --target install
+  in code - mkdir build  <br />
+  cmake -S . -B <build_folder>  <br />
+  cmake --build <build_folder> --target install  <br />
   cd build and make to build the code <br />
   ./quiz1 to run the code <br />
   <br />
