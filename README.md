@@ -8,7 +8,7 @@ _Building : _ <br />
   cmake -S . -B <build_folder>  <br />
   cmake --build <build_folder> --target install  <br />
   cd build and make to build the code <br />
-  ./quiz1 to run the code <br />
+  ./assignment1 to run the code <br />
   <br />
 _Controls : _
 Controls  | Description
