@@ -59,8 +59,8 @@ Cube::Cube(glm::vec3 colour, int shaderProgram) {
 
         //left face
         -0.05f, 0.0f, -0.05f, x, y, z,
-        -0.05f, 0.10f,-0.05f, x, y, z,
         -0.05f, 0.10f, 0.05f, x, y, z,
+        -0.05f, 0.0f, 0.05f, x, y, z,
 
         -0.05f, 0.0f, -0.05f, x, y, z,
         -0.05f, 0.10f, -0.05f, x, y, z,
@@ -100,38 +100,29 @@ Cube::Cube(glm::vec3 colour, int shaderProgram) {
 }
 
 void Cube::setBooleans(bool pointsOn, bool linesOn) {
-    Cube::pointsOn = pointsOn;
-    Cube::linesOn = linesOn;
+    // used to determine how the model will be drawn
+    Cube::pointsOn = pointsOn; // points
+    Cube::linesOn = linesOn; // lines
+    // else triangle
 }
 
-void Cube::cubeRotate(float angle, glm::vec3 rotate) {
-    Cube::offsetRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), rotate);
+void Cube::cubeTransformation(glm::mat4 model_matrix, float angle, glm::vec3 rotate, glm::vec3 translate, glm::vec3 scale) {
+    model_matrix = glm::translate(model_matrix, translate);
+    model_matrix = glm::rotate(model_matrix, glm::radians(angle), rotate);
+    model_matrix = glm::scale(model_matrix, scale);
+
+    Cube::worldModelMatrix = model_matrix;
 }
 
-void Cube::cubeTransformation(float angle, glm::vec3 rotate, glm::vec3 translate1, glm::vec3 translate2, glm::vec3 scale) {
-    glm::mat4 m = glm::mat4(1.0f);
+void Cube::drawCube() {
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(worldModelMatrix));
 
-    Cube::rotationMatrix = glm::rotate(m, glm::radians(angle), rotate);
-
-    glm::mat4 translationMatrix1 = glm::translate(m, translate1);
-    glm::mat4 translationMatrix2 = glm::translate(m, translate2);
-    Cube::translationMatrix = translationMatrix1 * translationMatrix2;
-
-    glm::mat4 translationMatrixcentre = glm::translate(m, glm::vec3(0.0f, 0.0f, 0.0f));
-
-    Cube::scalingMatrix = glm::scale(m, scale);
-
-    Cube::matrix = offsetRotationMatrix * (translationMatrix * rotationMatrix * translationMatrixcentre * scalingMatrix);
-
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(matrix));
-}
-
-int Cube::drawCube() {
     glBindVertexArray(VAO);
+
     if (Cube::pointsOn) { glPolygonMode(GL_FRONT_AND_BACK, GL_POINT); }
     else if (Cube::linesOn) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
     else { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
+
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
-    return -1;
 }

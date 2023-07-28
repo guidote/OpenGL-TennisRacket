@@ -14,27 +14,15 @@ class Cube {
 
         GLfloat vertices[72];
 
-        glm::mat4 matrix = glm::mat4(1.0f);
-
-        glm::mat4 rotationMatrix = glm::mat4(1.0f);
-        glm::mat4 translationMatrix = glm::mat4(1.0f);
-        glm::mat4 scalingMatrix = glm::mat4(1.0f);
-
-        glm::mat4 offsetRotationMatrix = glm::mat4(1.0f);
-
-        void scaleBack(glm::vec3 scale);
+        glm::mat4 worldModelMatrix = glm::mat4(1.0f); // model matrix for cube
 
         bool pointsOn = false;
         bool linesOn = false;
 
         Cube(glm::vec3 colour, int shaderProgram); // default constructor
 
-        void setBooleans(bool pointsOn, bool linesOn);
- 
-        void cubeRotate(float angle, glm::vec3 rotate); // calculates the rotation matrix
-        void cubeScale(glm::vec3 scale); // calculates the scaling matrix
+        void setBooleans(bool pointsOn, bool linesOn); // set booleans that determine how model is drawn
 
-        void cubeTransformation(float angle, glm::vec3 rotate, glm::vec3 translate1, glm::vec3 translate2, glm::vec3 scale); // when rotating and using translation we need to translate twice
-        
-        int drawCube(); // display cube, used for drawing
+        void cubeTransformation(glm::mat4 model_matrix, float angle, glm::vec3 rotate, glm::vec3 translate, glm::vec3 scale);
+        void drawCube(); // display cube, used for drawing
 };

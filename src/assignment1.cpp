@@ -27,11 +27,15 @@ const unsigned int SCR_HEIGHT = 768;
 bool pointsOn = false;
 bool linesOn = false;
 
+// starting location where is the racket origin
 glm::vec3 starting_location = glm::vec3(0.0f, 0.0f, 0.0f);
-
+// s is the overall scaling for the model
 float s = 1.0f;
-float r = 5.0f;
+// r is the overall rotation for the model
+float r = 0.0f;
 
+
+// vertex shader
 const char* getVertexShaderSource()
 {
     return "#version 330 core\n"
@@ -48,6 +52,7 @@ const char* getVertexShaderSource()
     "}";
 }
 
+// fragment shader
 const char* getFragmentShaderSource()
 {
     return "#version 330 core\n"
@@ -190,78 +195,91 @@ int main(int argc, char*argv[])
         grid.drawGrid();
 
 
-        // -- arm -- //
+        // -- arm -- // tranforms cube to create arm
+        glm::mat4 world_model_matrix = glm::mat4(1.0f);
+
+        // global transformations
+        world_model_matrix = glm::translate(world_model_matrix, starting_location);
+        world_model_matrix = glm::rotate(world_model_matrix, glm::radians(r), glm::vec3(0.0f, 1.0f, 0.0f));
+        world_model_matrix = glm::scale(world_model_matrix, glm::vec3(s));
+
         // bicep
-        cubeArm.cubeTransformation(-45.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3(0.0f, 0.0f, 0.0f)) * s, starting_location,(glm::vec3(0.5f, 2.0f, 0.5f)) * s);
+        cubeArm.cubeTransformation(world_model_matrix, -45.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3(0.0f, 0.0f, 0.0f)), glm::vec3(0.5f, 2.0f, 0.5f));
         cubeArm.drawCube();
         // forearm
             // use tan(angle) = opp/adj to find how much we need to translate x
             // increase height by the 0.10f height to be able to stack the cubes
             // -0.025f and +0.025f to make sure tha elbow connects
-        cubeArm.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1) - 0.025f, 0.1f + 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.5f, 2.0f, 0.5f)) * s);
+        cubeArm.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1) - 0.025f, 0.1f + 0.025f, 0.0f)), (glm::vec3(0.5f, 2.0f, 0.5f)));
         cubeArm.drawCube();
 
-        // -- tennis racket shape -- //
+        // -- tennis racket shape -- // transforms cube to create racket
+        world_model_matrix = glm::mat4(1.0f);
+
+        // global transformations
+        world_model_matrix = glm::translate(world_model_matrix, starting_location);
+        world_model_matrix = glm::rotate(world_model_matrix, glm::radians(r), glm::vec3(0.0f, 1.0f, 0.0f));
+        world_model_matrix = glm::scale(world_model_matrix, glm::vec3(s));
         // handle
-        cubeRacket.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f, (0.1f) * 3.0f + 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.25f, 2.0f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f, (0.1f) * 3.0f + 0.025f, 0.0f)), (glm::vec3(0.25f, 2.0f, 0.25f)));
         cubeRacket.drawCube();
 
         // racket
-        cubeRacket.cubeTransformation(-70.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - (0.025f), (0.1f) * 5.0f + 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.25f, 1.25f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, -70.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - (0.025f), (0.1f) * 5.0f + 0.025f, 0.0f)), (glm::vec3(0.25f, 1.25f, 0.25f)));
         cubeRacket.drawCube();
 
-        cubeRacket.cubeTransformation(70.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - (0.025f), (0.1f) * 5.0f + 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.25f, 1.25f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 70.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - (0.025f), (0.1f) * 5.0f + 0.025f, 0.0f)), (glm::vec3(0.25f, 1.25f, 0.25f)));
         cubeRacket.drawCube();
 
-        cubeRacket.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f + 0.125f, 0.1f * 5.0f + 0.065f, 0.0f)) * s, starting_location, (glm::vec3(0.25f, 2.0f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f + 0.125f, 0.1f * 5.0f + 0.065f, 0.0f)), (glm::vec3(0.25f, 2.0f, 0.25f)));
         cubeRacket.drawCube();
 
-        cubeRacket.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f - 0.125f, 0.1f * 5.0f + 0.065f, 0.0f)) * s, starting_location, (glm::vec3(0.25f, 2.0f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f - 0.125f, 0.1f * 5.0f + 0.065f, 0.0f)), (glm::vec3(0.25f, 2.0f, 0.25f)));
         cubeRacket.drawCube();
 
-        cubeRacket.cubeTransformation(-35.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f - 0.125f, (0.1f * 5.0f + 0.065f) + 2.0f * (0.05f * 2.0f), 0.0f)) * s, starting_location, (glm::vec3(0.25f, 1.25f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, -35.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f - 0.125f, (0.1f * 5.0f + 0.065f) + 2.0f * (0.05f * 2.0f), 0.0f)), (glm::vec3(0.25f, 1.25f, 0.25f)));
         cubeRacket.drawCube();
 
-        cubeRacket.cubeTransformation(35.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f + 0.125f, (0.1f * 5.0f + 0.065) + 2.0f * (0.05f * 2.0f), 0.0f)) * s, starting_location, (glm::vec3(0.25f, 1.25f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 35.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f + 0.125f, (0.1f * 5.0f + 0.065) + 2.0f * (0.05f * 2.0f), 0.0f)), (glm::vec3(0.25f, 1.25f, 0.25f)));
         cubeRacket.drawCube();
 
-        cubeRacket.cubeTransformation(90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.035f, (0.1f * 5.0f + 0.065f) + 3.0f * (0.05f * 2.0f), 0.0f)) * s, starting_location, (glm::vec3(0.25f, 1.25f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.035f, (0.1f * 5.0f + 0.065f) + 3.0f * (0.05f * 2.0f), 0.0f)), (glm::vec3(0.25f, 1.25f, 0.25f)));
         cubeRacket.drawCube();
 
-        cubeRacket.cubeTransformation(90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) - 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.25f, 2.5f, 0.25f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) - 0.025f, 0.0f)), (glm::vec3(0.25f, 2.5f, 0.25f)));
         cubeRacket.drawCube();
 
         // -- tennis strings -- //
-        cubeRacket.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f, (0.1f * 6.0f) - 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.025f, 3.0f, 0.025f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f, (0.1f * 6.0f) - 0.025f, 0.0f)), (glm::vec3(0.025f, 3.0f, 0.025f)));
         cubeRacket.drawCube();
         for (int i=1; i<= 4; i++) {
             if ( i > 2) {
-                cubeRacket.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f + (i * 0.025f), (0.1f * 6.0f) - 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.025f, 2.5f, 0.025f)) * s);
+                cubeRacket.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f + (i * 0.025f), (0.1f * 6.0f) - 0.025f, 0.0f)), (glm::vec3(0.025f, 2.5f, 0.025f)));
                 cubeRacket.drawCube();
-                cubeRacket.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f - (i * 0.025f), (0.1f * 6.0f) - 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.025f, 2.5f, 0.025f)) * s);
+                cubeRacket.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f - (i * 0.025f), (0.1f * 6.0f) - 0.025f, 0.0f)), (glm::vec3(0.025f, 2.5f, 0.025f)));
                 cubeRacket.drawCube();
             }
             else {
-                cubeRacket.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f + (i * 0.025f), (0.1f * 6.0f) - 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.025f, 3.0f, 0.025f)) * s);
+                cubeRacket.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f + (i * 0.025f), (0.1f * 6.0f) - 0.025f, 0.0f)), (glm::vec3(0.025f, 3.0f, 0.025f)));
                 cubeRacket.drawCube();
-                cubeRacket.cubeTransformation(0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f - (i * 0.025f), (0.1f * 6.0f) - 0.025f, 0.0f)) * s, starting_location, (glm::vec3(0.025f, 3.0f, 0.025f)) * s);
+                cubeRacket.cubeTransformation(world_model_matrix, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) - 0.025f - (i * 0.025f), (0.1f * 6.0f) - 0.025f, 0.0f)), (glm::vec3(0.025f, 3.0f, 0.025f)));
                 cubeRacket.drawCube();
             }
         }
 
-        cubeRacket.cubeTransformation(90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) + 0.105f, 0.0f)) * s, starting_location, (glm::vec3(0.025f, 2.5f, 0.025f)) * s);
+        cubeRacket.cubeTransformation(world_model_matrix, 90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) + 0.105f, 0.0f)), (glm::vec3(0.025f, 2.5f, 0.025f)));
         cubeRacket.drawCube();
         for (int i=1; i<= 4; i++) {
             if (i == 4) { 
-                cubeRacket.cubeTransformation(90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) + 0.105f - (i * 0.025f), 0.0f)) * s, starting_location, (glm::vec3(0.025f, 2.5f, 0.025f)) * s);
+                cubeRacket.cubeTransformation(world_model_matrix, 90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) + 0.105f - (i * 0.025f), 0.0f)), (glm::vec3(0.025f, 2.5f, 0.025f)));
                 cubeRacket.drawCube();
-                cubeRacket.cubeTransformation(90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.075f, (0.1f * 6.0f) + 0.105f + (i * 0.025f), 0.0f)) * s, starting_location, (glm::vec3(0.025f, 2.0f, 0.025f)) * s);
+                cubeRacket.cubeTransformation(world_model_matrix, 90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.075f, (0.1f * 6.0f) + 0.105f + (i * 0.025f), 0.0f)), (glm::vec3(0.025f, 2.0f, 0.025f)));
                 cubeRacket.drawCube();
             }
             else {
-                cubeRacket.cubeTransformation(90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) + 0.105f + (i * 0.025f), 0.0f)) * s, starting_location, (glm::vec3(0.025f, 2.5f, 0.025f)) * s);
+                cubeRacket.cubeTransformation(world_model_matrix, 90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) + 0.105f + (i * 0.025f), 0.0f)), (glm::vec3(0.025f, 2.5f, 0.025f)));
                 cubeRacket.drawCube();
-                cubeRacket.cubeTransformation(90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) + 0.105f - (i * 0.025f), 0.0f)) * s, starting_location, (glm::vec3(0.025f, 2.5f, 0.025f)) * s);
+                cubeRacket.cubeTransformation(world_model_matrix, 90.0f, glm::vec3(0.0f, 0.0f, 1.0f), (glm::vec3((tan(45) * 0.1f) + 0.1f, (0.1f * 6.0f) + 0.105f - (i * 0.025f), 0.0f)), (glm::vec3(0.025f, 2.5f, 0.025f)));
                 cubeRacket.drawCube();
             }
         }
@@ -274,17 +292,20 @@ int main(int argc, char*argv[])
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {glfwSetWindowShouldClose(window, true);}
         // key ‘P’ for points, key ‘L’ for lines, key ‘T’ for triangles
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) 
-        {
+        {   
+            //points
             cubeArm.setBooleans(true, false);
             cubeRacket.setBooleans(true, false);
         }
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) 
         {
+            // lines
             cubeArm.setBooleans(false, true);
             cubeRacket.setBooleans(false, true);
         }
         if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) 
-        {
+        {   
+            // triangle
             cubeArm.setBooleans(false, false);
             cubeRacket.setBooleans(false, false);
         }
@@ -297,41 +318,34 @@ int main(int argc, char*argv[])
             if ((rand() & 1) == 0) { x_value = -x_value; }; // generate number between 1 and 0, if 0 negative
             if ((rand() & 1) == 0) { z_value = -z_value; }; // generate number between 1 and 0, if 0 negative
 
+            // random location
             starting_location = glm::vec3(x_value, 0.0f, z_value);
         }
         // key 'A' → move left, 'D' → move right, 'W' → move up, 'S' → move down, 
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && ((glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)))
         {
-            float x_value = starting_location.x - (1.0f/100.0f);
-            starting_location = glm::vec3(x_value, 0.0f, starting_location.z);
+            starting_location += glm::vec3(-1.0f, 0.0f, 0.0f) * (1.0f/100.0f);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && ((glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)))
         {
-            float x_value = starting_location.x + (1.0f/100.0f);
-            starting_location = glm::vec3(x_value, 0.0f, starting_location.z);
+            starting_location += glm::vec3(1.0f, 0.0f, 0.0f) * (1.0f/100.0f);
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && ((glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)))
         {
-            float z_value = starting_location.z - (1.0f/100.0f);
-            starting_location = glm::vec3(starting_location.x, 0.0f, z_value);
+            starting_location += glm::vec3(0.0f, 0.0f, -1.0f) * (1.0f/100.0f);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && ((glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)))
         {
-            float z_value = starting_location.z + (1.0f/100.0f);
-            starting_location = glm::vec3(starting_location.x, 0.0f, z_value);
+             starting_location += glm::vec3(0.0f, 0.0f, 1.0f) * (1.0f/100.0f);
         }
         // key 'a' → rotate left 5 degrees about Y axis, 'd' → rotate right 5 degrees about Y axis
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && !((glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)))
-        {
-            cubeArm.cubeRotate(r, glm::vec3(0.0f, 1.0f, 0.0f));
-            cubeRacket.cubeRotate(r, glm::vec3(0.0f, 1.0f, 0.0f));
-            r += 0.5f;
+        {   
+            r += 5.0f;
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && !((glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)))
         {
-            cubeArm.cubeRotate(-r, glm::vec3(0.0f, 1.0f, 0.0f));
-            cubeRacket.cubeRotate(-r, glm::vec3(0.0f, 1.0f, 0.0f));
-            r += 0.5f;
+            r -= 5.0f;
         }
         // key ‘U’ for scale-up and ‘J’ for scale-down
         if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) 
